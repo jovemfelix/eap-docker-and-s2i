@@ -6,7 +6,7 @@ KIND_IMAGE_BASE=s2i-eap71-openshift
 BASE_VERSION=latest
 
 NOME_APP=eap71-s2i
-NOME_PROJETO_APP=openshift
+NOME_PROJETO_APP=${PROJETO_IMAGE_BASE}
 
 echo "---------------------------------------------------------------------------------"
 echo "- new-project-"
@@ -20,10 +20,13 @@ oc -n ${NOME_PROJETO_APP} delete bc/${NOME_APP} --ignore-not-found=true
 
 echo "---------------------------------------------------------------------------------"
 echo "- new-build-" # eh como se criasse um Dockerfile automatico
+# --image-stream=${PROJETO_IMAGE_BASE}/${KIND_IMAGE_BASE}:${BASE_VERSION} 
 echo "---------------------------------------------------------------------------------"
-oc -n ${NOME_PROJETO_APP} new-build --name=${NOME_APP} \
-  --image-stream=${PROJETO_IMAGE_BASE}/${KIND_IMAGE_BASE}:${BASE_VERSION} \
-  --binary --labels="app=${NOME_APP}"
+oc -n ${NOME_PROJETO_APP} \
+    new-build \
+    --name=${NOME_APP} \
+    --image-stream=openshift/jboss-eap71-openshift:latest \
+    --binary --labels="app=${NOME_APP}"
 
 echo "---------------------------------------------------------------------------------"
 echo "- start-build-" # eh como se fosse: docker build + docker push
